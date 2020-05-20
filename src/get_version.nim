@@ -6,14 +6,14 @@ type
     vMinor
     vMicro
   Version* = tuple
-    major: Natural
-    minor: Natural
-    micro: Natural
+    major: int
+    minor: int
+    micro: int
 
 const
-  minVer = 0.Natural
+  minVer = 0
   maxVer = 99
-  versionUnset: Version = (0.Natural, 0.Natural, 0.Natural) # Assuming that a real version will never be 0.0.0
+  versionUnset: Version = (0, 0, 0) # Assuming that a real version will never be 0.0.0
   versionSwitches = ["--version", # gcc, emacs and probably all GNU projects, nim
                      "-V", # tmux, p4
                      "version" # hugo
@@ -28,13 +28,13 @@ proc inc*(v: Version; seg = vMicro; maxV = maxVer): Version =
     result.minor = minVer
     result.micro = minVer
   of vMinor:
-    if result.minor == maxV.Natural:
+    if result.minor == maxV:
       return v.inc(vMajor)
     else:
       inc result.minor
     result.micro = minVer
   else:
-    if result.micro == maxV.Natural:
+    if result.micro == maxV:
       return v.inc(vMinor)
     else:
       inc result.micro
@@ -55,14 +55,14 @@ proc dec*(v: Version; seg = vMicro; maxV = maxVer): Version =
       dec result.minor
     else:
       result = v.dec(vMajor)
-      result.minor = maxV.Natural
+      result.minor = maxV
     result.micro = minVer
   else:
     if result.micro > minVer:
       dec result.micro
     else:
       result = v.dec(vMinor)
-      result.micro = maxV.Natural
+      result.micro = maxV
 
 proc getVersion*(versionOutLines: openArray[string]): Version =
   for ln in versionOutLines:

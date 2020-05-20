@@ -16,7 +16,7 @@ suite "version strings":
   test "a.b.c":
     check:
       # [""
-      #  ].getVersion() == (.Natural, .Natural, .Natural)
+      #  ].getVersion() == (, , )
 
       ["Nim Compiler Version 1.3.5 [Linux: amd64]",
        "Compiled at 2020-05-19",
@@ -64,20 +64,20 @@ suite "version strings":
 suite "inc dec tests":
   setup:
     const
-      `v00.00.00` = (0.Natural, 0.Natural, 0.Natural)
-      `v00.00.01` = (0.Natural, 0.Natural, 1.Natural)
-      `v00.01.00` = (0.Natural, 1.Natural, 0.Natural)
-      `v01.00.00` = (1.Natural, 0.Natural, 0.Natural)
-      `v01.01.01` = (1.Natural, 1.Natural, 1.Natural)
-      `v01.01.00` = (1.Natural, 1.Natural, 0.Natural)
+      `v00.00.00` = (0, 0, 0)
+      `v00.00.01` = (0, 0, 1)
+      `v00.01.00` = (0, 1, 0)
+      `v01.00.00` = (1, 0, 0)
+      `v01.01.01` = (1, 1, 1)
+      `v01.01.00` = (1, 1, 0)
 
-      `v00.00.09` = (0.Natural, 0.Natural, 9.Natural)
-      `v00.00.99` = (0.Natural, 0.Natural, 99.Natural)
-      `v00.99.99` = (0.Natural, 99.Natural, 99.Natural)
-      `v00.09.00` = (0.Natural, 9.Natural, 0.Natural)
-      `v00.99.00` = (0.Natural, 99.Natural, 0.Natural)
-      `v99.00.00` = (99.Natural, 0.Natural, 0.Natural)
-      `v100.00.00` = (100.Natural, 0.Natural, 0.Natural)
+      `v00.00.09` = (0, 0, 9)
+      `v00.00.99` = (0, 0, 99)
+      `v00.99.99` = (0, 99, 99)
+      `v00.09.00` = (0, 9, 0)
+      `v00.99.00` = (0, 99, 0)
+      `v99.00.00` = (99, 0, 0)
+      `v100.00.00` = (100, 0, 0)
 
   test "inc":
     check:
@@ -126,6 +126,9 @@ suite "compare":
       ["0.0.0"].getVersion() == ["0.0.0"].getVersion()
       ["0.0.0"].getVersion() <= ["0.0.0"].getVersion()
       ["0.0.0"].getVersion() >= ["0.0.0"].getVersion()
+
+      ["0.0.0"].getVersion() == (0, 0, 0)
+      (0, 0, 0) == ["0.0.0"].getVersion()
 
   test "!=":
     check:
