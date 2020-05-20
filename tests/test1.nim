@@ -118,3 +118,37 @@ suite "inc dec tests":
       `v01.00.00`.dec(vMinor, 9) == `v00.09.00`
 
       `v00.00.00`.dec(vMajor) == `v00.00.00`
+
+suite "compare":
+
+  test "==, >=, <=":
+    check:
+      ["0.0.0"].getVersion() == ["0.0.0"].getVersion()
+      ["0.0.0"].getVersion() <= ["0.0.0"].getVersion()
+      ["0.0.0"].getVersion() >= ["0.0.0"].getVersion()
+
+  test "!=":
+    check:
+      ["0.0.0"].getVersion() != ["0.0.1"].getVersion()
+      ["0.0.0"].getVersion() != ["0.1.0"].getVersion()
+      ["0.0.0"].getVersion() != ["1.0.0"].getVersion()
+
+      ["v1.0.0-DEV"].getVersion() != ["v1.0.0"].getVersion()
+
+  test "<":
+    check:
+      ["0.0.0"].getVersion() < ["0.0.1"].getVersion()
+      ["0.0.0"].getVersion() < ["0.1.0"].getVersion()
+      ["0.0.0"].getVersion() < ["1.1.0"].getVersion()
+
+      ["v0.99.0"].getVersion() < ["v1.0.0-DEV"].getVersion()
+      ["v1.0.0-DEV"].getVersion() < ["v1.0.0"].getVersion()
+
+  test ">":
+    check:
+      ["0.0.1"].getVersion() > ["0.0.0"].getVersion()
+      ["0.1.0"].getVersion() > ["0.0.0"].getVersion()
+      ["1.1.0"].getVersion() > ["0.0.0"].getVersion()
+
+      ["v1.0.0-DEV"].getVersion() > ["v0.99.0"].getVersion()
+      ["v1.0.0"].getVersion() > ["v1.0.0-DEV"].getVersion()
