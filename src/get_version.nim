@@ -105,3 +105,12 @@ proc getVersion*(app: string): Version =
       result = outp.splitLines().getVersion()
       if result != versionUnset:
         return
+
+proc `$`*(v: Version): string =
+  &"{v.major}.{v.minor}.{v.micro}"
+
+when isMainModule:
+  import std/[os]
+
+  for app in commandLineParams():
+    echo &"{app} version = {app.getVersion()}"

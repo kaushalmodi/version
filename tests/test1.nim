@@ -49,6 +49,7 @@ suite "version strings":
     check:
       ["tmux next-3.2"
        ].getVersionInt() == (3, 1, 99)
+      $(["tmux next-3.2"].getVersion()) == "3.1.99"
 
   test "va.b.c":
     check:
