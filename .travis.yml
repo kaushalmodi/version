@@ -11,9 +11,6 @@ cache:
     - upx
 
 env:
-  - BRANCH=1.2.0
-  - BRANCH=devel
-
   global:
     - REPONAME="$(basename ${TRAVIS_BUILD_DIR})" # /travis/build/kaushalmodi/version -> version
     #
@@ -25,6 +22,9 @@ env:
     #
     - DIST_DIR="${TRAVIS_BUILD_DIR}/dist"
     - ASSETFILE="${TRAVIS_BUILD_DIR}/${REPONAME}-${TRAVIS_TAG}.Linux_64bit_musl.tar.xz"
+  jobs:
+    - BRANCH=1.2.0
+    - BRANCH=devel
 
 addons:
   apt:
@@ -67,17 +67,17 @@ before_deploy:
 
 deploy:
   - provider: pages
-    # local-dir *has* to be a relative path from the repo root.
-    local-dir: "public"
-    skip-cleanup: true
-    github-token: "${GITHUB_OAUTH_TOKEN}"
-    keep-history: false
+    token: "${GITHUB_OAUTH_TOKEN}"
+    # local_dir *has* to be a relative path from the repo root.
+    local_dir: "public"
+    cleanup: false
+    keep_history: false
     on:
       branch: master
   - provider: releases
-    api_key: "${GITHUB_OAUTH_TOKEN}"
+    token: "${GITHUB_OAUTH_TOKEN}"
     file: "${ASSETFILE}"
-    skip_cleanup: true
+    cleanup: false
     on:
       tags: true
 
