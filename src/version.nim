@@ -1,4 +1,4 @@
-import std/[strformat, osproc, strutils, strscans]
+import std/[strformat, os, osproc, strutils, strscans]
 
 type
   VersionSegment* = enum
@@ -95,16 +95,17 @@ proc getVersion*(app: string): Version =
   ## Return the current version of `app` as a tuple.
   when defined(debug):
     echo app
-  for switch in versionSwitches:
-    let
-      (outp, exitCode) = execCmdEx(&"{app} {switch}")
-    # echo &"  {switch}: exitCode = {exitCode}, outp = {outp}"
-    if exitCode == QuitSuccess:
-      when defined(debug):
-        echo &"  {switch}: {outp}"
-      result = outp.splitLines().getVersion()
-      if result != versionUnset:
-        return
+  if app.findExe() != "":
+    for switch in versionSwitches:
+      let
+        (outp, exitCode) = execCmdEx(&"{app} {switch}")
+      # echo &"  {switch}: exitCode = {exitCode}, outp = {outp}"
+      if exitCode == QuitSuccess:
+        when defined(debug):
+          echo &"  {switch}: {outp}"
+        result = outp.splitLines().getVersion()
+        if result != versionUnset:
+          return
 
 proc `$`*(v: Version): string =
   &"{v.major}.{v.minor}.{v.micro}"
