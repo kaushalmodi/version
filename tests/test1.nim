@@ -1,4 +1,4 @@
-import std/[unittest]
+import std/[unittest, sugar]
 import version
 
 suite "app versions":
@@ -65,43 +65,43 @@ suite "inc dec tests":
 
   test "inc":
     check:
-      (0, 0, 0).inc(vPatch) == (0, 0, 1)
+      (0, 0, 0).dup(inc(vPatch)) == (0, 0, 1)
 
-      (0, 0, 0).inc(vMinor) == (0, 1, 0)
+      (0, 0, 0).dup(inc(vMinor)) == (0, 1, 0)
 
-      (0, 0, 0).inc(vMajor) == (1, 0, 0)
-      (99, 0, 0).inc(vMajor) == (100, 0, 0)
+      (0, 0, 0).dup(inc(vMajor)) == (1, 0, 0)
+      (99, 0, 0).dup(inc(vMajor)) == (100, 0, 0)
 
   test "inc overflow":
     check:
-      (0, 0, 99).inc(vPatch) == (0, 1, 0)
-      (0, 0, 9).inc(vPatch, 9) == (0, 1, 0)
-      (0, 99, 99).inc(vPatch) == (1, 0, 0)
+      (0, 0, 99).dup(inc(vPatch)) == (0, 1, 0)
+      (0, 0, 9).dup(inc(vPatch, 9)) == (0, 1, 0)
+      (0, 99, 99).dup(inc(vPatch)) == (1, 0, 0)
 
-      (0, 99, 0).inc(vMinor) == (1, 0, 0)
-      (0, 9, 0).inc(vMinor, 9) == (1, 0, 0)
+      (0, 99, 0).dup(inc(vMinor)) == (1, 0, 0)
+      (0, 9, 0).dup(inc(vMinor, 9)) == (1, 0, 0)
 
   test "dec":
     check:
-      (1, 1, 1).dec(vPatch) == (1, 1, 0)
+      (1, 1, 1).dup(dec(vPatch)) == (1, 1, 0)
 
-      (1, 1, 0).dec(vMinor) == (1, 0, 0)
-      (1, 1, 1).dec(vMinor) == (1, 0, 0)
+      (1, 1, 0).dup(dec(vMinor)) == (1, 0, 0)
+      (1, 1, 1).dup(dec(vMinor)) == (1, 0, 0)
 
-      (1, 0, 0).dec(vMajor) == (0, 0, 0)
-      (1, 1, 1).dec(vMajor) == (0, 0, 0)
+      (1, 0, 0).dup(dec(vMajor)) == (0, 0, 0)
+      (1, 1, 1).dup(dec(vMajor)) == (0, 0, 0)
 
   test "dec underflow":
     check:
-      (0, 0, 0).dec(vPatch) == (0, 0, 0)
-      (0, 1, 0).dec(vPatch) == (0, 0, 99)
-      (0, 1, 0).dec(vPatch, 9) == (0, 0, 9)
+      (0, 0, 0).dup(dec(vPatch)) == (0, 0, 0)
+      (0, 1, 0).dup(dec(vPatch)) == (0, 0, 99)
+      (0, 1, 0).dup(dec(vPatch, 9)) == (0, 0, 9)
 
-      (0, 0, 0).dec(vMinor) == (0, 0, 0)
-      (1, 0, 0).dec(vMinor) == (0, 99, 0)
-      (1, 0, 0).dec(vMinor, 9) == (0, 9, 0)
+      (0, 0, 0).dup(dec(vMinor)) == (0, 0, 0)
+      (1, 0, 0).dup(dec(vMinor)) == (0, 99, 0)
+      (1, 0, 0).dup(dec(vMinor, 9)) == (0, 9, 0)
 
-      (0, 0, 0).dec(vMajor) == (0, 0, 0)
+      (0, 0, 0).dup(dec(vMajor)) == (0, 0, 0)
 
 suite "compare":
 

@@ -22,50 +22,48 @@ const
                      "version" # hugo
                      ]
 
-proc inc*(v: Version; seg = vPatch; maxV = maxVer): Version =
+proc inc*(v: var Version; seg = vPatch; maxV = maxVer) =
   ## Increment version.
-  result = v
   case seg
   of vMajor:
-    inc result.major
-    result.minor = minVer
-    result.patch = minVer
+    inc v.major
+    v.minor = minVer
+    v.patch = minVer
   of vMinor:
-    if result.minor == maxV:
-      return v.inc(vMajor)
+    if v.minor == maxV:
+      v.inc(vMajor)
     else:
-      inc result.minor
-    result.patch = minVer
+      inc v.minor
+    v.patch = minVer
   else:
-    if result.patch == maxV:
-      return v.inc(vMinor)
+    if v.patch == maxV:
+      v.inc(vMinor)
     else:
-      inc result.patch
+      inc v.patch
 
-proc dec*(v: Version; seg = vPatch; maxV = maxVer): Version =
+proc dec*(v: var Version; seg = vPatch; maxV = maxVer) =
   ## Decrement version.
   if v == versionUnset:
     return
-  result = v
   case seg
   of vMajor:
-    if result.major > minVer:
-      dec result.major
-    result.minor = minVer
-    result.patch = minVer
+    if v.major > minVer:
+      dec v.major
+    v.minor = minVer
+    v.patch = minVer
   of vMinor:
-    if result.minor > minVer:
-      dec result.minor
+    if v.minor > minVer:
+      dec v.minor
     else:
-      result = v.dec(vMajor)
-      result.minor = maxV
-    result.patch = minVer
+      v.dec(vMajor)
+      v.minor = maxV
+    v.patch = minVer
   else:
-    if result.patch > minVer:
-      dec result.patch
+    if v.patch > minVer:
+      dec v.patch
     else:
-      result = v.dec(vMinor)
-      result.patch = maxV
+      v.dec(vMinor)
+      v.patch = maxV
 
 proc getVersion*(versionOutLines: openArray[string]): Version =
   for ln in versionOutLines:
@@ -90,7 +88,7 @@ proc getVersion*(versionOutLines: openArray[string]): Version =
         of "next", "DEV":
           # tmux : "next-3.2" -> (3, 1, 99)
           # hugo : "v0.72.0-DEV" -> (0, 71, 99)
-          result = result.dec(vPatch)
+          result.dec(vPatch)
         else:
           discard
 
