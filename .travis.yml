@@ -48,6 +48,12 @@ install:
   - export PATH="${TRAVIS_BUILD_DIR}/upx/${UPXVER}/:${PATH}"
   - nim -v
   - upx --version | grep -E '^upx'
+  - |
+    if [[ ( "${TRAVIS_OS_NAME}" == "linux" ) && ( "${BRANCH}" == "devel" ) ]]
+    then
+      # Do the deployment only on Linux, when using Nim devel.
+      export DO_DEPLOY=yes && echo "DO_DEPLOY = ${DO_DEPLOY}"
+    fi
 
 script:
   - cd "${TRAVIS_BUILD_DIR}"
@@ -59,17 +65,12 @@ script:
 
 before_deploy:
   - |
-    if [[ ( "$TRAVIS_OS_NAME" == "linux" ) && ( "${BRANCH}" == "devel" ) ]]
-    then
-      # Do the deployment only on Linux, when using Nim devel.
-      export DO_DEPLOY=yes && echo "DO_DEPLOY = ${DO_DEPLOY}"
-      mkdir -p "${DIST_DIR}"
-      cp "${BINFILE}" "${DIST_DIR}"/.
-      # -C <DIR> tells tar to change the current directory to <DIR>, and
-      # then the "." means "add the entire current directory" (including
-      # hidden files and sub-directories).
-      tar caf "${ASSETFILE}" -C "${DIST_DIR}" .
-    fi
+    mkdir -p "${DIST_DIR}"
+    cp "${BINFILE}" "${DIST_DIR}"/.
+    # -C <DIR> tells tar to change the current directory to <DIR>, and
+    # then the "." means "add the entire current directory" (including
+    # hidden files and sub-directories).
+    tar caf "${ASSETFILE}" -C "${DIST_DIR}" .
 
 deploy:
   - provider: pages
