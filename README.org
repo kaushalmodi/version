@@ -25,7 +25,7 @@ nimble install https://github.com/kaushalmodi/version
 * API Documentation
 [[https://kaushalmodi.github.io/version/][https://kaushalmodi.github.io/version/]]
 * Library
-** Run time
+** Compile time
 #+begin_src nim
 import version
 
@@ -33,7 +33,7 @@ static:
   doAssert "nim".getVersionCT() == (NimMajor, NimMinor, NimPatch)
   doAssert "gcc".getVersionCT() > (9, 0, 0)
 #+end_src
-** Compile time
+** Run time
 #+begin_src nim
 import version
 
