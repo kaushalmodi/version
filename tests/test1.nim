@@ -1,16 +1,6 @@
 import std/[unittest]
 import version
 
-proc getVersionInt*(versionOutLines: openArray[string]): (int, int, int) =
-  let
-    v = versionOutLines.getVersion()
-  return (v.major.int, v.minor.int, v.micro.int)
-
-proc getVersionInt*(app: string): (int, int, int) =
-  let
-    v = app.getVersion()
-  return (v.major.int, v.minor.int, v.micro.int)
-
 suite "version strings":
 
   test "a.b.c":
@@ -24,13 +14,13 @@ suite "version strings":
        "",
        "git hash: e909486e5cde5a4a77cd6f21b42fc9ab38ec2ae6",
        "active boot switches: -d:release"
-       ].getVersionInt() == (1, 3, 5)
+       ].getVersion() == (1, 3, 5)
 
       ["gcc (GCC) 9.1.0",
        "Copyright (C) 2019 Free Software Foundation, Inc.",
        "This is free software; see the source for copying conditions.  There is NO",
        "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
-       ].getVersionInt() == (9, 1, 0)
+       ].getVersion() == (9, 1, 0)
 
       ["GNU Emacs 27.0.91",
        "Copyright (C) 2020 Free Software Foundation, Inc.",
@@ -38,28 +28,28 @@ suite "version strings":
        "You may redistribute copies of GNU Emacs",
        "under the terms of the GNU General Public License.",
        "For more information about these matters, see the file named COPYING."
-       ].getVersionInt() == (27, 0, 91)
+       ].getVersion() == (27, 0, 91)
 
       ["ripgrep 12.0.1 (rev a2e6aec7a4)",
        "-SIMD -AVX (compiled)",
        "+SIMD -AVX (runtime)"
-       ].getVersionInt() == (12, 0, 1)
+       ].getVersion() == (12, 0, 1)
 
   test "next-a.b":
     check:
       ["tmux next-3.2"
-       ].getVersionInt() == (3, 1, 99)
+       ].getVersion() == (3, 1, 99)
       $(["tmux next-3.2"].getVersion()) == "3.1.99"
 
   test "va.b.c":
     check:
       ["Hugo Static Site Generator v0.71.0-06150C87 linux/amd64 BuildDate: 2020-05-18T16:08:02Z"
-       ].getVersionInt() == (0, 71, 0)
+       ].getVersion() == (0, 71, 0)
 
   test "va.b.c-DEV":
     check:
       ["Hugo Static Site Generator v0.72.0-DEV linux/amd64 BuildDate: 2020-05-18T16:08:02Z"
-       ].getVersionInt() == (0, 71, 99)
+       ].getVersion() == (0, 71, 99)
 
 suite "inc dec tests":
   setup:
