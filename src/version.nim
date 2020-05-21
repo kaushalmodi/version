@@ -10,7 +10,7 @@
 ## ======
 ## `Repo link <https://github.com/kaushalmodi/version>`_
 
-import std/[strformat, os, osproc, strutils, strscans]
+import std/[strformat, os, osproc, strutils, strscans, sequtils]
 
 type
   VersionSegment* = enum
@@ -131,7 +131,10 @@ proc dec*(v: var Version; seg = vPatch; maxVersionMinor = maxVersion; maxVersion
       v.dec(vMinor, maxVersionMinor)
       v.patch = maxVersionPatch
 
-proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVersion; maxVersionPatch = maxVersion): Version =
+proc getVersion*(versionOutLines: openArray[string];
+                 app = "";
+                 maxVersionMinor = maxVersion;
+                 maxVersionPatch = maxVersion): Version =
   ## Return the version parsed from an array or sequence of strings.
   runnableExamples:
     doAssert ["Nim Compiler Version 1.3.5 [Linux: amd64]"
@@ -148,7 +151,17 @@ proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVersio
     # Note: The parameters and return value must match to what ``scanf`` requires
     while start+result < input.len and input[start+result] in seps: inc result
 
+  var
+    app = app.toLowerAscii()
+    versionOutLinesFiltered: seq[string]
+
   for ln in versionOutLines:
+    versionOutLinesFiltered.add(ln)
+
+  if app != "" and versionOutLines.anyIt(it.toLowerAscii().contains(app)):
+    versionOutLinesFiltered = versionOutLines.filterIt(it.toLowerAscii().contains(app))
+
+  for ln in versionOutLinesFiltered:
     when defined(debug):
       echo &"ln = {ln}"
     for word in ln.split():
@@ -181,11 +194,12 @@ proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVersio
       if result != versionUnset:
         return
 
-proc getVersionTupInternal(versionLines: string;
+proc getVersionTupInternal(app: string;
+                           versionLines: string;
                            maxVersionMinor: int;
                            maxVersionPatch: int): VersionTup =
   let
-    v = versionLines.splitLines().getVersion(maxVersionMinor, maxVersionPatch)
+    v = versionLines.splitLines().getVersion(app, maxVersionMinor, maxVersionPatch)
   if v != versionUnset:
     result.tup = v
     result.str = versionLines.strip() & "\n"
@@ -195,7 +209,7 @@ proc getVersionTup(app: string; maxVersionMinor = maxVersion; maxVersionPatch = 
   when defined(debug):
     echo &"app = `{app}', findExe = {app.findExe}"
   if app == "version":
-    return getVersionTupInternal(versionVersion, maxVersionMinor, maxVersionPatch)
+    return getVersionTupInternal(app, versionVersion, maxVersionMinor, maxVersionPatch)
   if app.findExe() == "":
     raise newException(OSError, &"`{app}' executable was not found")
   for switch in versionSwitches:
@@ -205,7 +219,7 @@ proc getVersionTup(app: string; maxVersionMinor = maxVersion; maxVersionPatch = 
       echo &"  {switch}: exitCode = {exitCode}, outp = {outp}"
     if exitCode == QuitSuccess:
       let
-        vTup = getVersionTupInternal(outp, maxVersionMinor, maxVersionPatch)
+        vTup = getVersionTupInternal(app, outp, maxVersionMinor, maxVersionPatch)
       if vTup.tup != versionUnset:
         return vTup
 
@@ -221,13 +235,13 @@ proc getVersionTupCT(app: string; maxVersionMinor = maxVersion; maxVersionPatch 
   ## Return the version of `app` as a tuple of `Version` tuple and the app's original version string.
   ## **This is a compile time proc.**
   if app == "version":
-    return getVersionTupInternal(versionVersion, maxVersionMinor, maxVersionPatch)
+    return getVersionTupInternal(app, versionVersion, maxVersionMinor, maxVersionPatch)
   for switch in versionSwitches:
     let
       (outp, exitCode) = gorgeEx(&"{app} {switch}")
     if exitCode == QuitSuccess:
       let
-        vTup = getVersionTupInternal(outp, maxVersionMinor, maxVersionPatch)
+        vTup = getVersionTupInternal(app, outp, maxVersionMinor, maxVersionPatch)
       if vTup.tup != versionUnset:
         return vTup
 
