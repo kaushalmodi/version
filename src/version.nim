@@ -11,9 +11,9 @@ type
     micro: int
 
 const
+  versionUnset*: Version = (0, 0, 0) # Assuming that a real version will never be 0.0.0
   minVer = 0
   maxVer = 99
-  versionUnset: Version = (0, 0, 0) # Assuming that a real version will never be 0.0.0
   versionSwitches = ["--version", # gcc, emacs and probably all GNU projects, nim
                      "-V", # tmux, p4
                      "version" # hugo

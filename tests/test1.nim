@@ -1,6 +1,16 @@
 import std/[unittest]
 import version
 
+suite "app versions":
+
+  test "non-existent app":
+    check:
+      "fooBar_123_".getVersion() == versionUnset
+
+  test "nim":
+    check:
+      "nim".getVersion() == (NimMajor, NimMinor, NimPatch)
+
 suite "version strings":
 
   test "a.b.c":
