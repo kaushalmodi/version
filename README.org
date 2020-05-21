@@ -22,8 +22,9 @@ the version info:
 #+begin_example
 nimble install https://github.com/kaushalmodi/version
 #+end_example
+* API Documentation
+[[https://kaushalmodi.github.io/version/][https://kaushalmodi.github.io/version/]]
 * Library
-[[https://kaushalmodi.github.io/version/][*API Documentation*]]
 ** Run time
 #+begin_src nim
 import version
@@ -40,6 +41,9 @@ doAssert "nim".getVersion() == (NimMajor, NimMinor, NimPatch)
 doAssert "hugo".getVersion() >= (0, 60, 0)
 #+end_src
 * CLI Utility
+** Download
+If you do not want to ~nimble install~ this package, you can download
+the latest static binary (musl) for Linux 64-bit from [[https://github.com/kaushalmodi/version/releases][Releases]].
 ** Input from terminal
 #+begin_example
 version nim emacs hugo tcc perl tmux
