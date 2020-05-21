@@ -1,6 +1,8 @@
 #+title: Fetch and parse the version for almost all CLI apps
 #+author: Kaushal Modi
 
+[[https://travis-ci.org/kaushalmodi/version][https://travis-ci.org/kaushalmodi/version.svg?branch=master]]
+
 *version* provides a Nim library as well as a standalone CLI utility
  to fetch and parse the version info for any other CLI app.
 
@@ -21,6 +23,7 @@ the version info:
 nimble install https://github.com/kaushalmodi/version
 #+end_example
 * Library
+[[https://kaushalmodi.github.io/version/][*API Documentation*]]
 ** Run time
 #+begin_src nim
 import version
