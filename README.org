@@ -4,7 +4,7 @@
 [[https://travis-ci.org/kaushalmodi/version][https://travis-ci.org/kaushalmodi/version.svg?branch=master]]
 
 *version* provides a Nim library as well as a standalone CLI utility
- to fetch and parse the version info for any other CLI app.
+ to fetch and parse the version info for almost any CLI app.
 
 This project works for apps that use one of these switches to return
 the version info:

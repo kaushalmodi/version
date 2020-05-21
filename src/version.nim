@@ -1,3 +1,15 @@
+## :Author: Kaushal Modi
+## :License: MIT
+##
+## Introduction
+## ============
+## This module provides a Nim library as well as a standalone CLI utility
+## to fetch and parse the version info for almost any CLI app.
+##
+## Source
+## ======
+## `Repo link <https://github.com/kaushalmodi/version>`_
+
 import std/[strformat, os, osproc, strutils, strscans]
 
 type
@@ -17,7 +29,7 @@ const
   versionVersion* = gorge("git describe --tags HEAD")
   versionUnset*: Version = (0, 0, 0) # Assuming that a real version will never be 0.0.0
   minVer = 0
-  maxVer = 99
+  maxVersion* = 99
   versionSwitches = ["--version", # gcc, emacs and probably all GNU projects, nim
                      "-V", # tmux, p4
                      "-v", # tcc
@@ -25,8 +37,33 @@ const
                      "-version" # Cadence xrun
                      ]
 
-proc inc*(v: var Version; seg = vPatch; maxVersionMinor = maxVer; maxVersionPatch = maxVer) =
+proc inc*(v: var Version; seg = vPatch; maxVersionMinor = maxVersion; maxVersionPatch = maxVersion) =
   ## Increment version.
+  ##
+  ## *Patch version:*
+  ## - The patch version can increment up to `maxVersionPatch`.
+  ## - Once the max patch version is reached, the minor version is incremented.
+  ##
+  ## *Minor version:*
+  ## - The minor version can increment up to `maxVersionMinor`.
+  ## - Once the max minor version is reached, the major version is incremented.
+  ## - The patch version is reset to 0 each time the minor version is incremented.
+  ##
+  ## *Major version:*
+  ## - The patch and minor versions are reset to 0 each time the major version is
+  ##   incremented.
+  runnableExamples:
+    var
+      v: Version = (1, 9, 9)
+    v.inc(vPatch, maxVersionMinor = 9, maxVersionPatch = 9)
+    doAssert v == (2, 0, 0)
+    v.inc(vPatch)
+    doAssert v == (2, 0, 1)
+    v.inc(vMinor)
+    doAssert v == (2, 1, 0)
+    v.inc(vMajor)
+    doAssert v == (3, 0, 0)
+  ##
   case seg
   of vMajor:
     inc v.major
@@ -44,8 +81,34 @@ proc inc*(v: var Version; seg = vPatch; maxVersionMinor = maxVer; maxVersionPatc
     else:
       inc v.patch
 
-proc dec*(v: var Version; seg = vPatch; maxVersionMinor = maxVer; maxVersionPatch = maxVer) =
+proc dec*(v: var Version; seg = vPatch; maxVersionMinor = maxVersion; maxVersionPatch = maxVersion) =
   ## Decrement version.
+  ##
+  ## *Patch version:*
+  ## - Once the patch version reaches 0, the minor version is decremented, and
+  ##   the patch version is reset to `maxVersionPatch`.
+  ##
+  ## *Minor version:*
+  ## - Once the minor version reaches 0, the major version is decremented, and
+  ##   the minor version is reset to `maxVersionMinor`.
+  ## - The patch version is reset to 0 each time the minor version is decremented.
+  ##
+  ## *Major version:*
+  ## - The patch and minor versions are reset to 0 each time the major version is
+  ##   decremented.
+  ## - Once the major patch version reaches 0, it remains 0.
+  runnableExamples:
+    var
+      v: Version = (4, 0, 0)
+    v.dec(vPatch, maxVersionMinor = 5, maxVersionPatch = 9)
+    doAssert v == (3, 5, 9)
+    v.dec(vPatch)
+    doAssert v == (3, 5, 8)
+    v.dec(vMinor)
+    doAssert v == (3, 4, 0)
+    v.dec(vMajor)
+    doAssert v == (2, 0, 0)
+  ##
   if v == versionUnset:
     return
   case seg
@@ -68,7 +131,18 @@ proc dec*(v: var Version; seg = vPatch; maxVersionMinor = maxVer; maxVersionPatc
       v.dec(vMinor, maxVersionMinor)
       v.patch = maxVersionPatch
 
-proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVer; maxVersionPatch = maxVer): Version =
+proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVersion; maxVersionPatch = maxVersion): Version =
+  ## Return the version parsed from an array or sequence of strings.
+  runnableExamples:
+    doAssert ["Nim Compiler Version 1.3.5 [Linux: amd64]"
+              ].getVersion() == (1, 3, 5)
+    doAssert ["gcc (GCC) 9.1.0",
+              "Copyright (C) 2019 Free Software Foundation, Inc."
+              ].getVersion() == (9, 1, 0)
+    doAssert @["GNU Emacs 27.0.91",
+               "Copyright (C) 2020 Free Software Foundation, Inc."
+               ].getVersion() == (27, 0, 91)
+  ##
   # https://nim-lang.github.io/Nim/strscans#user-definable-matchers
   proc cadenceSep(input: string; start: int; seps = {'-', 'a', 's'}): int =
     # Note: The parameters and return value must match to what ``scanf`` requires
@@ -112,8 +186,8 @@ proc getVersionTupInternal(versionLines: string;
     result.tup = v
     result.str = versionLines.strip() & "\n"
 
-proc getVersionTup*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): VersionTup =
-  ## Return the current version of `app` as a tuple.
+proc getVersionTup(app: string; maxVersionMinor = maxVersion; maxVersionPatch = maxVersion): VersionTup =
+  ## Return the version of `app` as a tuple of `Version` tuple and the app's original version string.
   when defined(debug):
     echo &"app = `{app}', findExe = {app.findExe}"
   if app == "version":
@@ -131,11 +205,17 @@ proc getVersionTup*(app: string; maxVersionMinor = maxVer; maxVersionPatch = max
       if vTup.tup != versionUnset:
         return vTup
 
-proc getVersion*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): Version =
+proc getVersion*(app: string; maxVersionMinor = maxVersion; maxVersionPatch = maxVersion): Version =
+  ## Return the version parsed from the `app`'s version string.
+  runnableExamples:
+    doAssert "nim".getVersion() == (NimMajor, NimMinor, NimPatch)
+    doAssert "version".getVersion() == [versionVersion].getVersion()
+  ##
   return app.getVersionTup(maxVersionMinor, maxVersionPatch).tup
 
-proc getVersionTupCT*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): VersionTup =
-  ## Return the current version of `app` as a tuple.
+proc getVersionTupCT(app: string; maxVersionMinor = maxVersion; maxVersionPatch = maxVersion): VersionTup =
+  ## Return the version of `app` as a tuple of `Version` tuple and the app's original version string.
+  ## **This is a compile time proc.**
   if app == "version":
     return getVersionTupInternal(versionVersion, maxVersionMinor, maxVersionPatch)
   for switch in versionSwitches:
@@ -147,10 +227,23 @@ proc getVersionTupCT*(app: string; maxVersionMinor = maxVer; maxVersionPatch = m
       if vTup.tup != versionUnset:
         return vTup
 
-proc getVersionCT*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): Version =
+proc getVersionCT*(app: string; maxVersionMinor = maxVersion; maxVersionPatch = maxVersion): Version =
+  ## Return the version parsed from the `app`'s version string.
+  ## **This is a compile time proc.**
+  ##
+  ## .. code-block:: nim
+  ##   static:
+  ##     doAssert "nim".getVersion() == (NimMajor, NimMinor, NimPatch)
+  ##     doAssert "version".getVersion() == [versionVersion].getVersion()
   return app.getVersionTupCT(maxVersionMinor, maxVersionPatch).tup
 
 proc `$`*(v: Version): string =
+  ## Return the string representation of the version.
+  runnableExamples:
+    let
+      v: Version = (1, 2, 3)
+    doAssert $v == "1.2.3"
+  ##
   &"{v.major}.{v.minor}.{v.patch}"
 
 when isMainModule:
