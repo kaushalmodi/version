@@ -62,96 +62,80 @@ suite "version strings":
        ].getVersion() == (0, 71, 99)
 
 suite "inc dec tests":
-  setup:
-    const
-      `v00.00.00` = (0, 0, 0)
-      `v00.00.01` = (0, 0, 1)
-      `v00.01.00` = (0, 1, 0)
-      `v01.00.00` = (1, 0, 0)
-      `v01.01.01` = (1, 1, 1)
-      `v01.01.00` = (1, 1, 0)
-
-      `v00.00.09` = (0, 0, 9)
-      `v00.00.99` = (0, 0, 99)
-      `v00.99.99` = (0, 99, 99)
-      `v00.09.00` = (0, 9, 0)
-      `v00.99.00` = (0, 99, 0)
-      `v99.00.00` = (99, 0, 0)
-      `v100.00.00` = (100, 0, 0)
 
   test "inc":
     check:
-      `v00.00.00`.inc(vPatch) == `v00.00.01`
+      (0, 0, 0).inc(vPatch) == (0, 0, 1)
 
-      `v00.00.00`.inc(vMinor) == `v00.01.00`
+      (0, 0, 0).inc(vMinor) == (0, 1, 0)
 
-      `v00.00.00`.inc(vMajor) == `v01.00.00`
-      `v99.00.00`.inc(vMajor) == `v100.00.00`
+      (0, 0, 0).inc(vMajor) == (1, 0, 0)
+      (99, 0, 0).inc(vMajor) == (100, 0, 0)
 
   test "inc overflow":
     check:
-      `v00.00.99`.inc(vPatch) == `v00.01.00`
-      `v00.00.09`.inc(vPatch, 9) == `v00.01.00`
-      `v00.99.99`.inc(vPatch) == `v01.00.00`
+      (0, 0, 99).inc(vPatch) == (0, 1, 0)
+      (0, 0, 9).inc(vPatch, 9) == (0, 1, 0)
+      (0, 99, 99).inc(vPatch) == (1, 0, 0)
 
-      `v00.99.00`.inc(vMinor) == `v01.00.00`
-      `v00.09.00`.inc(vMinor, 9) == `v01.00.00`
+      (0, 99, 0).inc(vMinor) == (1, 0, 0)
+      (0, 9, 0).inc(vMinor, 9) == (1, 0, 0)
 
   test "dec":
     check:
-      `v01.01.01`.dec(vPatch) == `v01.01.00`
+      (1, 1, 1).dec(vPatch) == (1, 1, 0)
 
-      `v01.01.00`.dec(vMinor) == `v01.00.00`
-      `v01.01.01`.dec(vMinor) == `v01.00.00`
+      (1, 1, 0).dec(vMinor) == (1, 0, 0)
+      (1, 1, 1).dec(vMinor) == (1, 0, 0)
 
-      `v01.00.00`.dec(vMajor) == `v00.00.00`
-      `v01.01.01`.dec(vMajor) == `v00.00.00`
+      (1, 0, 0).dec(vMajor) == (0, 0, 0)
+      (1, 1, 1).dec(vMajor) == (0, 0, 0)
 
   test "dec underflow":
     check:
-      `v00.00.00`.dec(vPatch) == `v00.00.00`
-      `v00.01.00`.dec(vPatch) == `v00.00.99`
-      `v00.01.00`.dec(vPatch, 9) == `v00.00.09`
+      (0, 0, 0).dec(vPatch) == (0, 0, 0)
+      (0, 1, 0).dec(vPatch) == (0, 0, 99)
+      (0, 1, 0).dec(vPatch, 9) == (0, 0, 9)
 
-      `v00.00.00`.dec(vMinor) == `v00.00.00`
-      `v01.00.00`.dec(vMinor) == `v00.99.00`
-      `v01.00.00`.dec(vMinor, 9) == `v00.09.00`
+      (0, 0, 0).dec(vMinor) == (0, 0, 0)
+      (1, 0, 0).dec(vMinor) == (0, 99, 0)
+      (1, 0, 0).dec(vMinor, 9) == (0, 9, 0)
 
-      `v00.00.00`.dec(vMajor) == `v00.00.00`
+      (0, 0, 0).dec(vMajor) == (0, 0, 0)
 
 suite "compare":
 
   test "==, >=, <=":
     check:
-      ["0.0.0"].getVersion() == ["0.0.0"].getVersion()
-      ["0.0.0"].getVersion() <= ["0.0.0"].getVersion()
-      ["0.0.0"].getVersion() >= ["0.0.0"].getVersion()
+      ["0.0.0"].getVersion() == (0, 0, 0)
+      ["0.0.0"].getVersion() <= (0, 0, 0)
+      ["0.0.0"].getVersion() >= (0, 0, 0)
 
       ["0.0.0"].getVersion() == (0, 0, 0)
       (0, 0, 0) == ["0.0.0"].getVersion()
 
   test "!=":
     check:
-      ["0.0.0"].getVersion() != ["0.0.1"].getVersion()
-      ["0.0.0"].getVersion() != ["0.1.0"].getVersion()
-      ["0.0.0"].getVersion() != ["1.0.0"].getVersion()
+      ["0.0.0"].getVersion() != (0, 0, 1)
+      ["0.0.0"].getVersion() != (0, 1, 0)
+      ["0.0.0"].getVersion() != (1, 0, 0)
 
-      ["v1.0.0-DEV"].getVersion() != ["v1.0.0"].getVersion()
+      ["v1.0.0-DEV"].getVersion() != (1, 0, 0)
 
   test "<":
     check:
-      ["0.0.0"].getVersion() < ["0.0.1"].getVersion()
-      ["0.0.0"].getVersion() < ["0.1.0"].getVersion()
-      ["0.0.0"].getVersion() < ["1.1.0"].getVersion()
+      ["0.0.0"].getVersion() < (0, 0, 1)
+      ["0.0.0"].getVersion() < (0, 1, 0)
+      ["0.0.0"].getVersion() < (1, 1, 0)
 
       ["v0.99.0"].getVersion() < ["v1.0.0-DEV"].getVersion()
-      ["v1.0.0-DEV"].getVersion() < ["v1.0.0"].getVersion()
+      ["v1.0.0-DEV"].getVersion() < (1, 0, 0)
 
   test ">":
     check:
-      ["0.0.1"].getVersion() > ["0.0.0"].getVersion()
-      ["0.1.0"].getVersion() > ["0.0.0"].getVersion()
-      ["1.1.0"].getVersion() > ["0.0.0"].getVersion()
+      ["0.0.1"].getVersion() > (0, 0, 0)
+      ["0.1.0"].getVersion() > (0, 0, 0)
+      ["1.1.0"].getVersion() > (0, 0, 0)
 
-      ["v1.0.0-DEV"].getVersion() > ["v0.99.0"].getVersion()
+      ["v1.0.0-DEV"].getVersion() > (0, 99, 0)
       ["v1.0.0"].getVersion() > ["v1.0.0-DEV"].getVersion()
