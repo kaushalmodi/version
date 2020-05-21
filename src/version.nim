@@ -93,6 +93,17 @@ proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVer; m
         else:
           discard
 
+proc getVersionTupInternal(versionLines: string;
+                           maxVersionMinor: int;
+                           maxVersionPatch: int): VersionTup =
+  when defined(debug):
+    echo &"  {switch}: {outp}"
+  let
+    v = versionLines.splitLines().getVersion(maxVersionMinor, maxVersionPatch)
+  if v != versionUnset:
+    result.tup = v
+    result.str = versionLines
+
 proc getVersionTup*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): VersionTup =
   ## Return the current version of `app` as a tuple.
   when defined(debug):
@@ -103,17 +114,27 @@ proc getVersionTup*(app: string; maxVersionMinor = maxVer; maxVersionPatch = max
         (outp, exitCode) = execCmdEx(&"{app} {switch}")
       # echo &"  {switch}: exitCode = {exitCode}, outp = {outp}"
       if exitCode == QuitSuccess:
-        when defined(debug):
-          echo &"  {switch}: {outp}"
         let
-          v = outp.splitLines().getVersion(maxVersionMinor, maxVersionPatch)
-        if v != versionUnset:
-          result.tup = v
-          result.str = outp
-          return
+          vTup = getVersionTupInternal(outp, maxVersionMinor, maxVersionPatch)
+        if vTup.tup != versionUnset:
+          return vTup
 
 proc getVersion*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): Version =
   return app.getVersionTup(maxVersionMinor, maxVersionPatch).tup
+
+proc getVersionTupCT*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): VersionTup =
+  ## Return the current version of `app` as a tuple.
+  for switch in versionSwitches:
+    let
+      (outp, exitCode) = gorgeEx(&"{app} {switch}")
+    if exitCode == QuitSuccess:
+      let
+        vTup = getVersionTupInternal(outp, maxVersionMinor, maxVersionPatch)
+      if vTup.tup != versionUnset:
+        return vTup
+
+proc getVersionCT*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): Version =
+  return app.getVersionTupCT(maxVersionMinor, maxVersionPatch).tup
 
 proc `$`*(v: Version): string =
   &"{v.major}.{v.minor}.{v.patch}"
