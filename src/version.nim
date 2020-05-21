@@ -22,7 +22,7 @@ const
                      "version" # hugo
                      ]
 
-proc inc*(v: var Version; seg = vPatch; maxV = maxVer) =
+proc inc*(v: var Version; seg = vPatch; maxVersionMinor = maxVer; maxVersionPatch = maxVer) =
   ## Increment version.
   case seg
   of vMajor:
@@ -30,18 +30,18 @@ proc inc*(v: var Version; seg = vPatch; maxV = maxVer) =
     v.minor = minVer
     v.patch = minVer
   of vMinor:
-    if v.minor == maxV:
+    if v.minor == maxVersionMinor:
       v.inc(vMajor)
     else:
       inc v.minor
     v.patch = minVer
   else:
-    if v.patch == maxV:
-      v.inc(vMinor)
+    if v.patch == maxVersionPatch:
+      v.inc(vMinor, maxVersionMinor)
     else:
       inc v.patch
 
-proc dec*(v: var Version; seg = vPatch; maxV = maxVer) =
+proc dec*(v: var Version; seg = vPatch; maxVersionMinor = maxVer; maxVersionPatch = maxVer) =
   ## Decrement version.
   if v == versionUnset:
     return
@@ -56,14 +56,14 @@ proc dec*(v: var Version; seg = vPatch; maxV = maxVer) =
       dec v.minor
     else:
       v.dec(vMajor)
-      v.minor = maxV
+      v.minor = maxVersionMinor
     v.patch = minVer
   else:
     if v.patch > minVer:
       dec v.patch
     else:
-      v.dec(vMinor)
-      v.patch = maxV
+      v.dec(vMinor, maxVersionMinor)
+      v.patch = maxVersionPatch
 
 proc getVersion*(versionOutLines: openArray[string]): Version =
   for ln in versionOutLines:
