@@ -2,7 +2,7 @@ import std/[strformat]
 import version
 
 static:
-  for app in ["nim", "gcc", "emacs", "tmux", "hugo", "rg", "tcc"]:
+  for app in ["nim", "gcc", "emacs"]:
     echo &"{app} : {app.getVersionCT()}"
 
   doAssert "fooBar_123_".getVersionCT() == versionUnset
