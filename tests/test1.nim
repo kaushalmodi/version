@@ -81,7 +81,7 @@ suite "inc dec tests":
 
   test "inc":
     check:
-      `v00.00.00`.inc(vMicro) == `v00.00.01`
+      `v00.00.00`.inc(vPatch) == `v00.00.01`
 
       `v00.00.00`.inc(vMinor) == `v00.01.00`
 
@@ -90,16 +90,16 @@ suite "inc dec tests":
 
   test "inc overflow":
     check:
-      `v00.00.99`.inc(vMicro) == `v00.01.00`
-      `v00.00.09`.inc(vMicro, 9) == `v00.01.00`
-      `v00.99.99`.inc(vMicro) == `v01.00.00`
+      `v00.00.99`.inc(vPatch) == `v00.01.00`
+      `v00.00.09`.inc(vPatch, 9) == `v00.01.00`
+      `v00.99.99`.inc(vPatch) == `v01.00.00`
 
       `v00.99.00`.inc(vMinor) == `v01.00.00`
       `v00.09.00`.inc(vMinor, 9) == `v01.00.00`
 
   test "dec":
     check:
-      `v01.01.01`.dec(vMicro) == `v01.01.00`
+      `v01.01.01`.dec(vPatch) == `v01.01.00`
 
       `v01.01.00`.dec(vMinor) == `v01.00.00`
       `v01.01.01`.dec(vMinor) == `v01.00.00`
@@ -109,9 +109,9 @@ suite "inc dec tests":
 
   test "dec underflow":
     check:
-      `v00.00.00`.dec(vMicro) == `v00.00.00`
-      `v00.01.00`.dec(vMicro) == `v00.00.99`
-      `v00.01.00`.dec(vMicro, 9) == `v00.00.09`
+      `v00.00.00`.dec(vPatch) == `v00.00.00`
+      `v00.01.00`.dec(vPatch) == `v00.00.99`
+      `v00.01.00`.dec(vPatch, 9) == `v00.00.09`
 
       `v00.00.00`.dec(vMinor) == `v00.00.00`
       `v01.00.00`.dec(vMinor) == `v00.99.00`

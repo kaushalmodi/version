@@ -4,11 +4,11 @@ type
   VersionSegment* = enum
     vMajor
     vMinor
-    vMicro
+    vPatch
   Version* = tuple
     major: int
     minor: int
-    micro: int
+    patch: int
 
 const
   versionUnset*: Version = (0, 0, 0) # Assuming that a real version will never be 0.0.0
@@ -19,27 +19,27 @@ const
                      "version" # hugo
                      ]
 
-proc inc*(v: Version; seg = vMicro; maxV = maxVer): Version =
+proc inc*(v: Version; seg = vPatch; maxV = maxVer): Version =
   ## Increment version.
   result = v
   case seg
   of vMajor:
     inc result.major
     result.minor = minVer
-    result.micro = minVer
+    result.patch = minVer
   of vMinor:
     if result.minor == maxV:
       return v.inc(vMajor)
     else:
       inc result.minor
-    result.micro = minVer
+    result.patch = minVer
   else:
-    if result.micro == maxV:
+    if result.patch == maxV:
       return v.inc(vMinor)
     else:
-      inc result.micro
+      inc result.patch
 
-proc dec*(v: Version; seg = vMicro; maxV = maxVer): Version =
+proc dec*(v: Version; seg = vPatch; maxV = maxVer): Version =
   ## Decrement version.
   if v == versionUnset:
     return
@@ -49,20 +49,20 @@ proc dec*(v: Version; seg = vMicro; maxV = maxVer): Version =
     if result.major > minVer:
       dec result.major
     result.minor = minVer
-    result.micro = minVer
+    result.patch = minVer
   of vMinor:
     if result.minor > minVer:
       dec result.minor
     else:
       result = v.dec(vMajor)
       result.minor = maxV
-    result.micro = minVer
+    result.patch = minVer
   else:
-    if result.micro > minVer:
-      dec result.micro
+    if result.patch > minVer:
+      dec result.patch
     else:
       result = v.dec(vMinor)
-      result.micro = maxV
+      result.patch = maxV
 
 proc getVersion*(versionOutLines: openArray[string]): Version =
   for ln in versionOutLines:
@@ -70,24 +70,24 @@ proc getVersion*(versionOutLines: openArray[string]): Version =
       when defined(debug):
         echo &"word = {word}"
       var
-        major, minor, micro: int
+        major, minor, patch: int
         tag: string
-      if scanf(word, "$i.$i.$i", major, minor, micro) or # nim, gcc, emacs
-         scanf(word, "v$i.$i.$i-$w", major, minor, micro, tag) or # hugo DEV
-         scanf(word, "v$i.$i.$i", major, minor, micro) or # hugo
+      if scanf(word, "$i.$i.$i", major, minor, patch) or # nim, gcc, emacs
+         scanf(word, "v$i.$i.$i-$w", major, minor, patch, tag) or # hugo DEV
+         scanf(word, "v$i.$i.$i", major, minor, patch) or # hugo
          scanf(word, "$w-$i.$i", tag, major, minor) or # tmux
          scanf(word, "$i.$i", major, minor): # ?
         if major > 0:
           result.major = major
         if minor > 0:
           result.minor = minor
-        if micro > 0:
-          result.micro = micro
+        if patch > 0:
+          result.patch = patch
         case tag
         of "next", "DEV":
           # tmux : "next-3.2" -> (3, 1, 99)
           # hugo : "v0.72.0-DEV" -> (0, 71, 99)
-          result = result.dec(vMicro)
+          result = result.dec(vPatch)
         else:
           return
 
@@ -108,7 +108,7 @@ proc getVersion*(app: string): Version =
           return
 
 proc `$`*(v: Version): string =
-  &"{v.major}.{v.minor}.{v.micro}"
+  &"{v.major}.{v.minor}.{v.patch}"
 
 when isMainModule:
   import std/[os]
