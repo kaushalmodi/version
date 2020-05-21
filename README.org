@@ -107,3 +107,22 @@ echo "nim emacs hugo tcc perl tmux" | version
   return the version info for any application (issues/PR's are of
   course welcome if you have an app that doesn't work with
   this). Example: ~version nim emacs hugo gcc tcc tmux perl python~.
+* Known limitations
+** Versions of multiple tools on the same line
+Some tools like PyPy ([[https://github.com/kaushalmodi/version/issues/10#issue-622673454][ref]]) output versions of other tools as well on
+the same line. While this issue doesn't happen specifically when
+running ~version pypy~, ~version~ will return the version of the wrong
+tool if that tool's version shows up first on the line. Here's a dummy
+example:
+#+begin_example
+> version mytool
+mytool version: 1.1.1
+  othertool 1.1.1 mytool 2.2.2
+#+end_example
+/But the good thing is that the full version string is also printed./
+** tcl
+To find the Tcl version on your system, run:
+#+begin_src shell
+echo 'puts [info patchlevel]; exit 0' | tclsh
+#+end_src
+[[https://stackoverflow.com/a/19189401/1219634][reference]]
