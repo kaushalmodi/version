@@ -11,6 +11,10 @@ suite "app versions":
     check:
       "nim".getVersion() == (NimMajor, NimMinor, NimPatch)
 
+  test "version":
+    check:
+      "version".getVersion() == [versionVersion].getVersion()
+
 suite "version strings":
 
   test "dollar":

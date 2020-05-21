@@ -14,6 +14,7 @@ type
     str: string
 
 const
+  versionVersion* = gorge("git describe --tags HEAD")
   versionUnset*: Version = (0, 0, 0) # Assuming that a real version will never be 0.0.0
   minVer = 0
   maxVer = 99
@@ -114,7 +115,9 @@ proc getVersionTupInternal(versionLines: string;
 proc getVersionTup*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): VersionTup =
   ## Return the current version of `app` as a tuple.
   when defined(debug):
-    echo &"app = `{app}'"
+    echo &"app = `{app}', findExe = {app.findExe}"
+  if app == "version":
+    return getVersionTupInternal(versionVersion, maxVersionMinor, maxVersionPatch)
   if app.findExe() == "":
     raise newException(OSError, &"`{app}' executable was not found")
   for switch in versionSwitches:
@@ -133,6 +136,8 @@ proc getVersion*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer
 
 proc getVersionTupCT*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): VersionTup =
   ## Return the current version of `app` as a tuple.
+  if app == "version":
+    return getVersionTupInternal(versionVersion, maxVersionMinor, maxVersionPatch)
   for switch in versionSwitches:
     let
       (outp, exitCode) = gorgeEx(&"{app} {switch}")
@@ -151,11 +156,22 @@ proc `$`*(v: Version): string =
 when isMainModule:
   import std/[terminal]
 
+  const
+    versionHelp = """Usage   : version <app1> <app2> ..
+Example : version nim emacs"""
+
   if isatty(stdin): # Input from stdin
-    # example: version nim emacs hugo
-    for app in commandLineParams():
-      echo &"{app} version: {app.getVersionTup().tup}"
-      echo app.getVersionTup().str.indent(2)
+    let
+      params = commandLineParams()
+    if params.len == 0:
+      echo versionHelp
+    elif params.len == 1 and params[0] in ["--version", "-v"]:
+      echo versionVersion
+    else:
+      # example: version nim emacs hugo
+      for app in params:
+        echo &"{app} version: {app.getVersionTup().tup}"
+        echo app.getVersionTup().str.indent(2)
   else: # Input from a pipe
     let
       pipeData = readAll(stdin).strip().splitLines()

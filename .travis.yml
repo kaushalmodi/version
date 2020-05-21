@@ -72,6 +72,7 @@ script:
   - nim pullConfig
   - nim musl "${NIMFILE}"
   - file "${BINFILE}"
+  - eval "${BINFILE} --version"
   - eval "${BINFILE} nim"
   - nim test
   - nim docs
