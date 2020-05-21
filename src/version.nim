@@ -118,9 +118,18 @@ proc `$`*(v: Version): string =
   &"{v.major}.{v.minor}.{v.patch}"
 
 when isMainModule:
-  import std/[os]
+  import std/[terminal]
 
-  # example: version nim emacs hugo
-  for app in commandLineParams():
-    echo &"{app} version: {app.getVersionTup().tup}"
-    echo app.getVersionTup().str
+  if isatty(stdin): # Input from stdin
+    # example: version nim emacs hugo
+    for app in commandLineParams():
+      echo &"{app} version: {app.getVersionTup().tup}"
+      echo app.getVersionTup().str.indent(2)
+  else: # Input from a pipe
+    let
+      pipeData = readAll(stdin).strip().splitLines()
+    # example: echo "nim emacs hugo" | version .. just because
+    for ln in pipeData:
+      for app in ln.split():
+        echo &"{app} version: {app.getVersionTup().tup}"
+        echo app.getVersionTup().str.indent(2)
