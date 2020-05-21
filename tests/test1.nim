@@ -68,8 +68,12 @@ suite "inc dec tests":
       (0, 0, 0).dup(inc(vPatch)) == (0, 0, 1)
 
       (0, 0, 0).dup(inc(vMinor)) == (0, 1, 0)
+      (0, 0, 1).dup(inc(vMinor)) == (0, 1, 0)
 
       (0, 0, 0).dup(inc(vMajor)) == (1, 0, 0)
+      (0, 0, 1).dup(inc(vMajor)) == (1, 0, 0)
+      (0, 1, 0).dup(inc(vMajor)) == (1, 0, 0)
+      (0, 1, 1).dup(inc(vMajor)) == (1, 0, 0)
       (99, 0, 0).dup(inc(vMajor)) == (100, 0, 0)
 
   test "inc overflow":
@@ -90,27 +94,30 @@ suite "inc dec tests":
       (1, 1, 1).dup(dec(vMinor)) == (1, 0, 0)
 
       (1, 0, 0).dup(dec(vMajor)) == (0, 0, 0)
+      (1, 0, 1).dup(dec(vMajor)) == (0, 0, 0)
+      (1, 1, 0).dup(dec(vMajor)) == (0, 0, 0)
       (1, 1, 1).dup(dec(vMajor)) == (0, 0, 0)
 
   test "dec underflow":
     check:
       (0, 0, 0).dup(dec(vPatch)) == (0, 0, 0)
+      (0, 0, 0).dup(dec(vMinor)) == (0, 0, 0)
+      (0, 0, 0).dup(dec(vMajor)) == (0, 0, 0)
+
       (0, 1, 0).dup(dec(vPatch)) == (0, 0, 99)
       (0, 1, 0).dup(dec(vPatch, maxVersionPatch = 9)) == (0, 0, 9)
+      (1, 0, 0).dup(dec(vPatch, maxVersionMinor = 5, maxVersionPatch = 9)) == (0, 5, 9)
 
-      (0, 0, 0).dup(dec(vMinor)) == (0, 0, 0)
       (1, 0, 0).dup(dec(vMinor)) == (0, 99, 0)
       (1, 0, 0).dup(dec(vMinor, maxVersionMinor = 9)) == (0, 9, 0)
-
-      (0, 0, 0).dup(dec(vMajor)) == (0, 0, 0)
 
 suite "compare":
 
   test "==, >=, <=":
     check:
-      ["0.0.0"].getVersion() == (0, 0, 0)
-      ["0.0.0"].getVersion() <= (0, 0, 0)
-      ["0.0.0"].getVersion() >= (0, 0, 0)
+      ["5.5.5"].getVersion() == (5, 5, 5)
+      ["5.5.5"].getVersion() <= (5, 5, 5)
+      ["5.5.5"].getVersion() >= (5, 5, 5)
 
   test "!=":
     check:
