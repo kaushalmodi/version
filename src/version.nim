@@ -9,6 +9,9 @@ type
     major: int
     minor: int
     patch: int
+  VersionTup* = tuple
+    tup: Version
+    str: string
 
 const
   versionUnset*: Version = (0, 0, 0) # Assuming that a real version will never be 0.0.0
@@ -89,9 +92,9 @@ proc getVersion*(versionOutLines: openArray[string]): Version =
           # hugo : "v0.72.0-DEV" -> (0, 71, 99)
           result = result.dec(vPatch)
         else:
-          return
+          discard
 
-proc getVersion*(app: string): Version =
+proc getVersionTup*(app: string): VersionTup =
   ## Return the current version of `app` as a tuple.
   when defined(debug):
     echo app
@@ -103,9 +106,15 @@ proc getVersion*(app: string): Version =
       if exitCode == QuitSuccess:
         when defined(debug):
           echo &"  {switch}: {outp}"
-        result = outp.splitLines().getVersion()
-        if result != versionUnset:
+        let
+          v = outp.splitLines().getVersion()
+        if v != versionUnset:
+          result.tup = v
+          result.str = outp
           return
+
+proc getVersion*(app: string): Version =
+  return app.getVersionTup().tup
 
 proc `$`*(v: Version): string =
   &"{v.major}.{v.minor}.{v.patch}"
@@ -113,5 +122,7 @@ proc `$`*(v: Version): string =
 when isMainModule:
   import std/[os]
 
+  # example: version nim emacs hugo
   for app in commandLineParams():
-    echo &"{app} version = {app.getVersion()}"
+    echo &"{app} version:"
+    echo app.getVersionTup().str
