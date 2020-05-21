@@ -66,7 +66,7 @@ proc dec*(v: var Version; seg = vPatch; maxVersionMinor = maxVer; maxVersionPatc
       v.dec(vMinor, maxVersionMinor)
       v.patch = maxVersionPatch
 
-proc getVersion*(versionOutLines: openArray[string]): Version =
+proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVer; maxVersionPatch = maxVer): Version =
   for ln in versionOutLines:
     for word in ln.split():
       when defined(debug):
@@ -89,11 +89,11 @@ proc getVersion*(versionOutLines: openArray[string]): Version =
         of "next", "DEV":
           # tmux : "next-3.2" -> (3, 1, 99)
           # hugo : "v0.72.0-DEV" -> (0, 71, 99)
-          result.dec(vPatch)
+          result.dec(vPatch, maxVersionMinor, maxVersionPatch)
         else:
           discard
 
-proc getVersionTup*(app: string): VersionTup =
+proc getVersionTup*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): VersionTup =
   ## Return the current version of `app` as a tuple.
   when defined(debug):
     echo app
@@ -106,14 +106,14 @@ proc getVersionTup*(app: string): VersionTup =
         when defined(debug):
           echo &"  {switch}: {outp}"
         let
-          v = outp.splitLines().getVersion()
+          v = outp.splitLines().getVersion(maxVersionMinor, maxVersionPatch)
         if v != versionUnset:
           result.tup = v
           result.str = outp
           return
 
-proc getVersion*(app: string): Version =
-  return app.getVersionTup().tup
+proc getVersion*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): Version =
+  return app.getVersionTup(maxVersionMinor, maxVersionPatch).tup
 
 proc `$`*(v: Version): string =
   &"{v.major}.{v.minor}.{v.patch}"

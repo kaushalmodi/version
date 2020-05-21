@@ -13,6 +13,10 @@ suite "app versions":
 
 suite "version strings":
 
+  test "dollar":
+    check:
+      $["1.2.3"].getVersion() == "1.2.3"
+
   test "a.b.c":
     check:
       # [""
@@ -49,17 +53,23 @@ suite "version strings":
     check:
       ["tmux next-3.2"
         ].getVersion() == (3, 1, 99)
-      $(["tmux next-3.2"].getVersion()) == "3.1.99"
+      ["tmux next-3.2"].getVersion() == (3, 1, 99)
 
   test "va.b.c":
     check:
       ["Hugo Static Site Generator v0.71.0-06150C87 linux/amd64 BuildDate: 2020-05-18T16:08:02Z"
-        ].getVersion() == (0, 71, 0)
+       ].getVersion() == (0, 71, 0)
 
   test "va.b.c-DEV":
     check:
       ["Hugo Static Site Generator v0.72.0-DEV linux/amd64 BuildDate: 2020-05-18T16:08:02Z"
-        ].getVersion() == (0, 71, 99)
+       ].getVersion() == (0, 71, 99)
+
+  test "maxVersionMinor, maxVersionPatch":
+    check:
+      ["next-3.2"].getVersion(maxVersionPatch = 9) == (3, 1, 9)
+      ["v0.72.0-DEV"].getVersion(maxVersionPatch = 51) == (0, 71, 51)
+      ["v10.0.0-DEV"].getVersion(maxVersionMinor = 5, maxVersionPatch = 9) == (9, 5, 9)
 
 suite "inc dec tests":
 
