@@ -4,8 +4,8 @@ import version
 suite "app versions":
 
   test "non-existent app":
-    check:
-      "fooBar_123_".getVersion() == versionUnset
+    expect OSError:
+      discard "fooBar_123_".getVersion()
 
   test "nim":
     check:

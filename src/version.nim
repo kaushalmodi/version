@@ -109,16 +109,17 @@ proc getVersionTup*(app: string; maxVersionMinor = maxVer; maxVersionPatch = max
   ## Return the current version of `app` as a tuple.
   when defined(debug):
     echo app
-  if app.findExe() != "":
-    for switch in versionSwitches:
+  if app.findExe() == "":
+    raise newException(OSError, &"`{app}' executable was not found")
+  for switch in versionSwitches:
+    let
+      (outp, exitCode) = execCmdEx(&"{app} {switch}")
+    # echo &"  {switch}: exitCode = {exitCode}, outp = {outp}"
+    if exitCode == QuitSuccess:
       let
-        (outp, exitCode) = execCmdEx(&"{app} {switch}")
-      # echo &"  {switch}: exitCode = {exitCode}, outp = {outp}"
-      if exitCode == QuitSuccess:
-        let
-          vTup = getVersionTupInternal(outp, maxVersionMinor, maxVersionPatch)
-        if vTup.tup != versionUnset:
-          return vTup
+        vTup = getVersionTupInternal(outp, maxVersionMinor, maxVersionPatch)
+      if vTup.tup != versionUnset:
+        return vTup
 
 proc getVersion*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): Version =
   return app.getVersionTup(maxVersionMinor, maxVersionPatch).tup
