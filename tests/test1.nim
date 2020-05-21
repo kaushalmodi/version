@@ -79,6 +79,10 @@ suite "version strings":
       ["19.09-s008"].getVersion() == (19, 9, 8)
       ["20.04-a01"].getVersion() == (20, 4, 1)
 
+  test "git describe --tags HEAD":
+    check:
+      ["v0.2.1-4-g0df556e"].getVersion() == (0, 2, 1)
+
   test "maxVersionMinor, maxVersionPatch":
     check:
       ["next-3.2"].getVersion(maxVersionPatch = 9) == (3, 1, 9)

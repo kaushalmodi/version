@@ -78,9 +78,10 @@ proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVer; m
       when defined(debug):
         echo &"word = {word}"
       var
-        major, minor, patch: int
+        major, minor, patch, extra: int
         tag: string
       if scanf(word, "$i.$i.$i", major, minor, patch) or # nim, gcc, emacs
+         scanf(word, "v$i.$i.$i-$i-$w", major, minor, patch, extra, tag) or # git describe --tags HEAD
          scanf(word, "v$i.$i.$i-$w", major, minor, patch, tag) or # hugo DEV
          scanf(word, "v$i.$i.$i", major, minor, patch) or # hugo
          scanf(word, "(v$i.$i.$i)", major, minor, patch) or # perl
@@ -104,8 +105,6 @@ proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVer; m
 proc getVersionTupInternal(versionLines: string;
                            maxVersionMinor: int;
                            maxVersionPatch: int): VersionTup =
-  when defined(debug):
-    echo &"  {switch}: {outp}"
   let
     v = versionLines.splitLines().getVersion(maxVersionMinor, maxVersionPatch)
   if v != versionUnset:
@@ -115,13 +114,14 @@ proc getVersionTupInternal(versionLines: string;
 proc getVersionTup*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): VersionTup =
   ## Return the current version of `app` as a tuple.
   when defined(debug):
-    echo app
+    echo &"app = `{app}'"
   if app.findExe() == "":
     raise newException(OSError, &"`{app}' executable was not found")
   for switch in versionSwitches:
     let
       (outp, exitCode) = execCmdEx(&"{app} {switch}")
-    # echo &"  {switch}: exitCode = {exitCode}, outp = {outp}"
+    when defined(debug):
+      echo &"  {switch}: exitCode = {exitCode}, outp = {outp}"
     if exitCode == QuitSuccess:
       let
         vTup = getVersionTupInternal(outp, maxVersionMinor, maxVersionPatch)
