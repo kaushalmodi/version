@@ -122,5 +122,5 @@ when isMainModule:
 
   # example: version nim emacs hugo
   for app in commandLineParams():
-    echo &"{app} version:"
+    echo &"{app} version: {app.getVersionTup().tup}"
     echo app.getVersionTup().str
