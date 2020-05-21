@@ -2,13 +2,11 @@
 
 version       = "0.1.0"
 author        = "Kaushal Modi"
-description   = "Parse the version number of most CLI apps"
+description   = "Fetch/parse the version of most CLI apps"
 license       = "MIT"
 srcDir        = "src"
 installExt    = @["nim"]
-bin           = @["get_version"]
-
-
+bin           = @["version"]
 
 # Dependencies
 

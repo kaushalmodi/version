@@ -1,5 +1,5 @@
 import std/[unittest]
-import get_version
+import version
 
 proc getVersionInt*(versionOutLines: openArray[string]): (int, int, int) =
   let
