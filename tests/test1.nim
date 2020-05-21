@@ -74,6 +74,11 @@ suite "version strings":
       ["Hugo Static Site Generator v0.72.0-DEV linux/amd64 BuildDate: 2020-05-18T16:08:02Z"
        ].getVersion() == (0, 71, 99)
 
+  test "Cadence xrun":
+    check:
+      ["19.09-s008"].getVersion() == (19, 9, 8)
+      ["20.04-a01"].getVersion() == (20, 4, 1)
+
   test "maxVersionMinor, maxVersionPatch":
     check:
       ["next-3.2"].getVersion(maxVersionPatch = 9) == (3, 1, 9)

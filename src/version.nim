@@ -20,7 +20,8 @@ const
   versionSwitches = ["--version", # gcc, emacs and probably all GNU projects, nim
                      "-V", # tmux, p4
                      "-v", # tcc
-                     "version" # hugo
+                     "version", # hugo
+                     "-version" # Cadence xrun
                      ]
 
 proc inc*(v: var Version; seg = vPatch; maxVersionMinor = maxVer; maxVersionPatch = maxVer) =
@@ -67,6 +68,11 @@ proc dec*(v: var Version; seg = vPatch; maxVersionMinor = maxVer; maxVersionPatc
       v.patch = maxVersionPatch
 
 proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVer; maxVersionPatch = maxVer): Version =
+  # https://nim-lang.github.io/Nim/strscans#user-definable-matchers
+  proc cadenceSep(input: string; start: int; seps = {'-', 'a', 's'}): int =
+    # Note: The parameters and return value must match to what ``scanf`` requires
+    while start+result < input.len and input[start+result] in seps: inc result
+
   for ln in versionOutLines:
     for word in ln.split():
       when defined(debug):
@@ -79,6 +85,7 @@ proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVer; m
          scanf(word, "v$i.$i.$i", major, minor, patch) or # hugo
          scanf(word, "(v$i.$i.$i)", major, minor, patch) or # perl
          scanf(word, "$w-$i.$i", tag, major, minor) or # tmux
+         scanf(word, "$i.$i$[cadenceSep]$i", major, minor, patch) or # Cadence xrun
          scanf(word, "$i.$i", major, minor): # ?
         if major > 0:
           result.major = major
