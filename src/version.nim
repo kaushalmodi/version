@@ -102,7 +102,7 @@ proc getVersionTupInternal(versionLines: string;
     v = versionLines.splitLines().getVersion(maxVersionMinor, maxVersionPatch)
   if v != versionUnset:
     result.tup = v
-    result.str = versionLines
+    result.str = versionLines.strip() & "\n"
 
 proc getVersionTup*(app: string; maxVersionMinor = maxVer; maxVersionPatch = maxVer): VersionTup =
   ## Return the current version of `app` as a tuple.
