@@ -19,6 +19,7 @@ const
   maxVer = 99
   versionSwitches = ["--version", # gcc, emacs and probably all GNU projects, nim
                      "-V", # tmux, p4
+                     "-v", # tcc
                      "version" # hugo
                      ]
 
