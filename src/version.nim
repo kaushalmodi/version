@@ -77,6 +77,7 @@ proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVer; m
       if scanf(word, "$i.$i.$i", major, minor, patch) or # nim, gcc, emacs
          scanf(word, "v$i.$i.$i-$w", major, minor, patch, tag) or # hugo DEV
          scanf(word, "v$i.$i.$i", major, minor, patch) or # hugo
+         scanf(word, "(v$i.$i.$i)", major, minor, patch) or # perl
          scanf(word, "$w-$i.$i", tag, major, minor) or # tmux
          scanf(word, "$i.$i", major, minor): # ?
         if major > 0:
