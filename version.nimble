@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.2.0"
+version       = "0.2.1"
 author        = "Kaushal Modi"
 description   = "Fetch/parse the version of most CLI apps"
 license       = "MIT"
