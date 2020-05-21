@@ -58,28 +58,36 @@ script:
   - nim docs
 
 before_deploy:
-  - mkdir -p "${DIST_DIR}"
-  - cp "${BINFILE}" "${DIST_DIR}"/.
-  # -C <DIR> tells tar to change the current directory to <DIR>, and
-  # then the "." means "add the entire current directory" (including
-  # hidden files and sub-directories).
-  - tar caf "${ASSETFILE}" -C "${DIST_DIR}" .
+  - |
+    if [[ ( "$TRAVIS_OS_NAME" == "linux" ) && ( "${BRANCH}" == "devel" ) ]]
+    then
+      # Do the deployment only on Linux, when using Nim devel.
+      export DO_DEPLOY=yes && echo "DO_DEPLOY = ${DO_DEPLOY}"
+      mkdir -p "${DIST_DIR}"
+      cp "${BINFILE}" "${DIST_DIR}"/.
+      # -C <DIR> tells tar to change the current directory to <DIR>, and
+      # then the "." means "add the entire current directory" (including
+      # hidden files and sub-directories).
+      tar caf "${ASSETFILE}" -C "${DIST_DIR}" .
+    fi
 
 deploy:
   - provider: pages
+    on:
+      condition: "! -z ${DO_DEPLOY+x}"
+      branch: master
     token: "${GITHUB_OAUTH_TOKEN}"
     # local_dir *has* to be a relative path from the repo root.
     local_dir: "public"
-    cleanup: false
+    skip_cleanup: true
     keep_history: false
-    on:
-      branch: master
   - provider: releases
+    on:
+      condition: "! -z ${DO_DEPLOY+x}"
+      tags: true
     token: "${GITHUB_OAUTH_TOKEN}"
     file: "${ASSETFILE}"
-    cleanup: false
-    on:
-      tags: true
+    skip_cleanup: true
 
 notifications:
   email:
