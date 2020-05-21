@@ -149,6 +149,8 @@ proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVersio
     while start+result < input.len and input[start+result] in seps: inc result
 
   for ln in versionOutLines:
+    when defined(debug):
+      echo &"ln = {ln}"
     for word in ln.split():
       when defined(debug):
         echo &"word = {word}"
@@ -176,6 +178,8 @@ proc getVersion*(versionOutLines: openArray[string]; maxVersionMinor = maxVersio
           result.dec(vPatch, maxVersionMinor, maxVersionPatch)
         else:
           discard
+      if result != versionUnset:
+        return
 
 proc getVersionTupInternal(versionLines: string;
                            maxVersionMinor: int;
