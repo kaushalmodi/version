@@ -111,9 +111,6 @@ suite "compare":
       ["0.0.0"].getVersion() <= (0, 0, 0)
       ["0.0.0"].getVersion() >= (0, 0, 0)
 
-      ["0.0.0"].getVersion() == (0, 0, 0)
-      (0, 0, 0) == ["0.0.0"].getVersion()
-
   test "!=":
     check:
       ["0.0.0"].getVersion() != (0, 0, 1)
