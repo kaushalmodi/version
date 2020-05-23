@@ -184,14 +184,10 @@ proc getVersion*(versionOutLines: openArray[string];
           result.minor = minor
         if patch > 0:
           result.patch = patch
-        case tag
-        of "next", "DEV":
+        if tag in ["next", "DEV"]:
           # tmux : "next-3.2" -> (3, 1, 99)
           # hugo : "v0.72.0-DEV" -> (0, 71, 99)
           result.dec(vPatch, maxVersionMinor, maxVersionPatch)
-        else:
-          discard
-      if result != versionUnset:
         return
 
 proc getVersionTupInternal(app: string;
