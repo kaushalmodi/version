@@ -62,6 +62,18 @@ suite "version strings":
        ].getVersion() == (4, 1, 2) # I am not planning to support a 4th segment in version tuple
                                    # So that (1) in 4.1.2(1) will be silently ignored.
 
+      ["ShellCheck - shell script analysis tool",
+       "version: 0.4.7",
+       "license: GNU General Public License, version 3",
+       "website: http://www.shellcheck.net"
+       ].getVersion() == (0, 4, 7)
+
+      ["ShellCheck - shell script analysis tool",
+       "version: 0.4.7",
+       "license: GNU General Public License, version 3",
+       "website: http://www.shellcheck.net"
+       ].getVersion(app = "shellcheck") == (0, 4, 7)
+
   test "next-a.b":
     check:
       ["tmux next-3.2"

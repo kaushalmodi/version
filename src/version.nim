@@ -10,7 +10,7 @@
 ## ======
 ## `Repo link <https://github.com/kaushalmodi/version>`_
 
-import std/[strformat, os, osproc, strutils, strscans, sequtils]
+import std/[strformat, os, osproc, strutils, strscans]
 
 type
   VersionSegment* = enum
@@ -153,15 +153,10 @@ proc getVersion*(versionOutLines: openArray[string];
 
   var
     app = app.toLowerAscii()
-    versionOutLinesFiltered: seq[string]
 
   for ln in versionOutLines:
-    versionOutLinesFiltered.add(ln)
-
-  if app != "" and versionOutLines.anyIt(it.toLowerAscii().contains(app)):
-    versionOutLinesFiltered = versionOutLines.filterIt(it.toLowerAscii().contains(app))
-
-  for ln in versionOutLinesFiltered:
+    let
+      lineHasAppName = app != "" and ln.toLowerAscii().contains(app)
     when defined(debug):
       echo &"ln = {ln}"
     for word in ln.split():
@@ -178,17 +173,15 @@ proc getVersion*(versionOutLines: openArray[string];
          scanf(word, "$w-$i.$i", tag, major, minor) or # tmux
          scanf(word, "$i.$i$[cadenceSep]$i", major, minor, patch) or # Cadence xrun
          scanf(word, "$i.$i", major, minor): # ?
-        if major > 0:
-          result.major = major
-        if minor > 0:
-          result.minor = minor
-        if patch > 0:
-          result.patch = patch
+        result.major = major
+        result.minor = minor
+        result.patch = patch
         if tag in ["next", "DEV"]:
           # tmux : "next-3.2" -> (3, 1, 99)
           # hugo : "v0.72.0-DEV" -> (0, 71, 99)
           result.dec(vPatch, maxVersionMinor, maxVersionPatch)
-        return
+        if lineHasAppName:
+          return
 
 proc getVersionTupInternal(app: string;
                            versionLines: string;
