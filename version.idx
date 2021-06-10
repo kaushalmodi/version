@@ -1,0 +1,17 @@
+Introduction	index.html#introduction	 Introduction	
+Source	index.html#source	 Source	
+vMajor	index.html#vMajor	VersionSegment.vMajor	
+vMinor	index.html#vMinor	VersionSegment.vMinor	
+vPatch	index.html#vPatch	VersionSegment.vPatch	
+VersionSegment	index.html#VersionSegment	version: VersionSegment	
+Version	index.html#Version	version: Version	
+VersionTup	index.html#VersionTup	version: VersionTup	
+versionVersion	index.html#versionVersion	version: versionVersion	
+versionUnset	index.html#versionUnset	version: versionUnset	
+maxVersion	index.html#maxVersion	version: maxVersion	
+inc	index.html#inc,Version	version: inc(v: var Version; seg = vPatch; maxVersionMinor = maxVersion;\n    maxVersionPatch = maxVersion)	
+dec	index.html#dec,Version	version: dec(v: var Version; seg = vPatch; maxVersionMinor = maxVersion;\n    maxVersionPatch = maxVersion)	
+getVersion	index.html#getVersion,openArray[string],string	version: getVersion(versionOutLines: openArray[string]; app = &quot;&quot;;\n           maxVersionMinor = maxVersion; maxVersionPatch = maxVersion): Version	
+getVersion	index.html#getVersion,string	version: getVersion(app: string; maxVersionMinor = maxVersion;\n           maxVersionPatch = maxVersion): Version	
+getVersionCT	index.html#getVersionCT,string	version: getVersionCT(app: string; maxVersionMinor = maxVersion;\n             maxVersionPatch = maxVersion): Version	
+`$`	index.html#$,Version	version: `$`(v: Version): string	
