@@ -1,7 +1,8 @@
 #+title: Fetch and parse the version for almost all CLI apps
 #+author: Kaushal Modi
 
-[[https://travis-ci.org/kaushalmodi/version][https://travis-ci.org/kaushalmodi/version.svg?branch=master]]
+[[https://github.com/kaushalmodi/version/actions/workflows/test.yml][https://github.com/kaushalmodi/version/actions/workflows/test.yml/badge.svg]]
+[[https://github.com/kaushalmodi/version/actions/workflows/docs.yml][https://github.com/kaushalmodi/version/actions/workflows/docs.yml/badge.svg]]
 
 *version* provides a Nim library as well as a standalone CLI utility
  to fetch and parse the version info for almost any CLI app.
