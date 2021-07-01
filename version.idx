@@ -1,5 +1,3 @@
-Introduction	index.html#introduction	 Introduction	
-Source	index.html#source	 Source	
 vMajor	index.html#vMajor	VersionSegment.vMajor	
 vMinor	index.html#vMinor	VersionSegment.vMinor	
 vPatch	index.html#vPatch	VersionSegment.vPatch	
@@ -15,3 +13,5 @@ getVersion	index.html#getVersion,openArray[string],string	version: getVersion(ve
 getVersion	index.html#getVersion,string	version: getVersion(app: string; maxVersionMinor = maxVersion;\n           maxVersionPatch = maxVersion): Version	
 getVersionCT	index.html#getVersionCT,string	version: getVersionCT(app: string; maxVersionMinor = maxVersion;\n             maxVersionPatch = maxVersion): Version	
 `$`	index.html#$,Version	version: `$`(v: Version): string	
+Introduction	index.html#introduction	 Introduction	
+Source	index.html#source	 Source	
